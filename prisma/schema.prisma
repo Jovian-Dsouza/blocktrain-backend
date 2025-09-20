@@ -1,0 +1,30 @@
+// PostgreSQL version of the schema with proper enum support
+// To use this, rename it to schema.prisma and update your DATABASE_URL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TradeType {
+  BUY
+  SELL
+}
+
+model Event {
+  id            String    @id @default(uuid())
+  walletAddress String
+  token1        String    // Primary token address
+  amount1       Float?    // Primary token amount
+  token2        String?   // Secondary token address (optional)
+  amount2       Float?    // Secondary token amount (optional)
+  tradeType     TradeType
+  priceAt       Float?
+  tradedAt      DateTime  @default(now())
+
+  @@map("events")
+}

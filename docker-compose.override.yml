@@ -1,0 +1,25 @@
+# Development overrides for docker-compose.yml
+# This file is automatically loaded by docker-compose
+
+version: '3.8'
+
+services:
+  postgres:
+    # Override for development - expose more ports if needed
+    ports:
+      - "5432:5432"
+    # Add development-specific environment variables
+    environment:
+      POSTGRES_DB: blocktrain
+      POSTGRES_USER: blocktrain_user
+      POSTGRES_PASSWORD: blocktrain_password
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+      # Enable logging for development
+      POSTGRES_LOG_STATEMENT: "all"
+      POSTGRES_LOG_MIN_DURATION_STATEMENT: "0"
+    # Mount local init scripts
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+      # Optional: mount a backup directory
+      - ./backups:/backups
