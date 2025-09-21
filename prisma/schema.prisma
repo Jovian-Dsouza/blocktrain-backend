@@ -15,6 +15,37 @@ enum TradeType {
   SELL
 }
 
+model TelegramUser {
+  id        String   @id @default(uuid())
+  chatId    String   @unique
+  username  String?
+  firstName String?
+  lastName  String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  walletSubscriptions WalletSubscription[]
+
+  @@map("telegram_users")
+}
+
+model WalletSubscription {
+  id            String        @id @default(uuid())
+  telegramUserId String
+  walletAddress String
+  isActive      Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  // Relations
+  telegramUser TelegramUser @relation(fields: [telegramUserId], references: [id], onDelete: Cascade)
+
+  @@unique([telegramUserId, walletAddress])
+  @@map("wallet_subscriptions")
+}
+
 model Event {
   id            String    @id @default(uuid())
   walletAddress String
@@ -25,6 +56,7 @@ model Event {
   tradeType     TradeType
   priceAt       Float?
   tradedAt      DateTime  @default(now())
+  notified      Boolean   @default(false) // Track if notification was sent
 
   @@map("events")
 }
