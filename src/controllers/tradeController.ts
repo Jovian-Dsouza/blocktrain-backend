@@ -28,10 +28,16 @@ export const createTrade = async (req: Request, res: Response) => {
       });
     }
 
+    // Check if wallet is tracked
+    const trackedWallet = await prisma.wallet.findUnique({
+      where: { address: walletAddress }
+    });
+
     // Create trade event
     const event = await prisma.event.create({
       data: {
         walletAddress,
+        walletId: trackedWallet?.id || null,
         token1: tokenAddress,
         amount1: amount,
         token2: '', // Not used in current API but required by schema

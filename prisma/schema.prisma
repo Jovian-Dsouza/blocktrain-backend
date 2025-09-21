@@ -46,9 +46,25 @@ model WalletSubscription {
   @@map("wallet_subscriptions")
 }
 
+model Wallet {
+  id          String   @id @default(uuid())
+  address     String   @unique
+  name        String?
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  events Event[]
+
+  @@map("wallets")
+}
+
 model Event {
   id            String    @id @default(uuid())
   walletAddress String
+  walletId      String?   // Reference to tracked wallet
   token1        String    // Primary token address
   amount1       Float?    // Primary token amount
   token2        String?   // Secondary token address (optional)
@@ -57,6 +73,9 @@ model Event {
   priceAt       Float?
   tradedAt      DateTime  @default(now())
   notified      Boolean   @default(false) // Track if notification was sent
+
+  // Relations
+  wallet Wallet? @relation(fields: [walletId], references: [id], onDelete: SetNull)
 
   @@map("events")
 }

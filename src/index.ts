@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 import { tradeRoutes } from './routes/tradeRoutes';
+import { walletRoutes } from './routes/walletRoutes';
 import { errorHandler } from './middleware/errorHandler';
 import { TelegramBotService } from './services/telegramBot';
 import { NotificationService } from './services/notificationService';
@@ -22,6 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/v1', tradeRoutes);
+app.use('/api/v1', walletRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
