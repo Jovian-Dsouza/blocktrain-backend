@@ -1,6 +1,14 @@
 import { Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
 import { CreateTradeRequest, TradeResponse, RecentTradesQuery, RecentTradesResponse } from '../types/trade';
+import { NotificationService } from '../services/notificationService';
+
+// Global notification service instance
+let notificationService: NotificationService | null = null;
+
+export const setNotificationService = (service: NotificationService) => {
+  notificationService = service;
+};
 
 export const createTrade = async (req: Request, res: Response) => {
   try {
@@ -43,6 +51,13 @@ export const createTrade = async (req: Request, res: Response) => {
       tradedAt: event.tradedAt.toISOString(),
       priceAt: event.priceAt || undefined
     };
+
+    // Trigger notification asynchronously
+    if (notificationService) {
+      notificationService.processNewEvent(event.id).catch(error => {
+        console.error('Error processing notification:', error);
+      });
+    }
 
     res.status(201).json(response);
   } catch (error) {
